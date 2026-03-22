@@ -1,0 +1,723 @@
+{\rtf1\ansi\ansicpg950\cocoartf2867
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 import React, \{ useState, useEffect, useMemo \} from 'react';\
+import \{ \
+  Activity, \
+  Target, \
+  ChevronRight, \
+  ChevronLeft,\
+  LayoutDashboard,\
+  Orbit,\
+  Unplug,\
+  Languages,\
+  Sparkles,\
+  RotateCcw,\
+  ArrowRight,\
+  Zap,\
+  Info,\
+  Lightbulb,\
+  Printer\
+\} from 'lucide-react';\
+\
+const TRANSLATIONS = \{\
+  en: \{\
+    title: "AI WORK ALIGNMENT CHECK",\
+    subtitle: "Master Concept \'d7 Asana",\
+    heroTitle: "Using AI, but not getting faster?",\
+    heroSub: "Many teams have adopted AI tools, yet their day-to-day work still feels:",\
+    painPoints: ["Fragmented communication", "Hard to track progress", "Difficult to evaluate impact"],\
+    heroFooter: "The issue is not AI. It\'92s how work actually runs.",\
+    introTitle: "This quick check helps you understand:",\
+    introPoints: ["How AI output flows into work", "How work is managed", "How results are evaluated"],\
+    introFooter: "Find where the gaps are between AI, process, and goals.",\
+    startBtn: "Start Check",\
+    step: "Step",\
+    next: "NEXT",\
+    prev: "PREV",\
+    getReport: "GET REPORT",\
+    retry: "Restart",\
+    downloadPdf: "Export PDF Report",\
+    waiting: "Waiting...",\
+    labelStructured: "Structured",\
+    labelFragmented: "Fragmented",\
+    labelGoalDriven: "Goal-driven",\
+    labelLowVisibility: "Low visibility",\
+    reportTitle: "Alignment Report",\
+    reportSubtitle: "AI-Era Organization Alignment Check",\
+    suggestion: "Next Steps",\
+    footerLabel: "Insight Note",\
+    footerNote: "Every team operates differently. This is not about good or bad results, but a reflection of how work currently runs through this model.",\
+    cta: "Get June Workshop Ticket (Singapore)",\
+    steps: [\
+      \{ \
+        id: 'aiVelocity',\
+        title: "AI Velocity", \
+        q: "Which AI tools are you using?", \
+        items: ['ChatGPT', 'Claude', 'M365 Copilot', 'Gemini', 'GitHub Copilot', 'Cursor', 'Notion AI', 'Midjourney', 'Perplexity', 'Gamma', 'Canva Magic', 'Suno', 'Fireflies', 'Otter', 'Jasper', 'OpenClaw']\
+      \},\
+      \{ \
+        id: 'friction',\
+        title: "Workflow", \
+        q: "What happens after AI generates something?", \
+        items: ['Chat in LINE / Slack / WhatsApp', 'Email back and forth', 'Logged in Excel / docs', 'Decided in meetings', 'Assigned by manager', 'Handled individually', 'Verbal requests', 'Manual copy-paste']\
+      \},\
+      \{ \
+        id: 'workGraph',\
+        title: "Work System", \
+        q: "Outside of AI, how is work usually managed?", \
+        items: [\
+          \{ label: 'Managed in one system', px: 80 \},\
+          \{ label: 'Portfolio management', px: 80 \},\
+          \{ label: 'Automated workflow', px: 80 \},\
+          \{ label: 'Managed across tools', px: 60 \},\
+          \{ label: 'Ownership unclear', px: -80 \},\
+          \{ label: 'Progress not consistent', px: -80 \},\
+          \{ label: 'Need follow up', px: -80 \},\
+          \{ label: 'no standard process', px: -80 \}\
+        ]\
+      \},\
+      \{ \
+        id: 'strategic',\
+        title: "Business Impact", \
+        q: "When decisions are made, what are they based on?", \
+        items: [\
+          \{ label: 'clear links to results', px: 80 \},\
+          \{ label: 'goal and okr alignment', px: 80 \},\
+          \{ label: 'based on report and data', px: 60 \},\
+          \{ label: 'customer impact analysis', px: 60 \},\
+          \{ label: 'Review after completion', px: -60 \},\
+          \{ label: 'based on team discussion', px: -80 \},\
+          \{ label: 'based on experience', px: -80 \},\
+          \{ label: 'hard to tell what works', px: -80 \}\
+        ]\
+      \}\
+    ],\
+    results: \{\
+      growth: \{\
+        title: "AI-Driven Growth",\
+        desc: "Your team has established a relatively mature way of working:\\n\\n\'95 AI is not just a tool, but actively contributes to outcomes\\n\'95 Work is structured and consistently managed\\n\'95 Actions are clearly connected to business goals\\n\\n\uc0\u55357 \u56393  AI is already part of your work system, not just an individual productivity tool.",\
+        next: "\'95 Standardizing successful workflows across projects\\n\'95 Improving cross-team visibility and coordination\\n\'95 Reducing manual effort through automation"\
+      \},\
+      vanity: \{\
+        title: "Disconnected Momentum",\
+        desc: "Your team has structure, but AI's value isn't fully realized due to disconnection:\\n\\n\'95 AI speeds up tasks, but outputs don't flow seamlessly into execution\\n\'95 Momentum is lost in handovers or tool-switching\\n\'95 Efficiency is hampered by the gap between generation and management\\n\\n\uc0\u55357 \u56393  You are moving, but the momentum isn't fully captured by the system.",\
+        next: "\'95 Connecting AI outputs directly to your project management system\\n\'95 Minimizing manual data entry between platforms\\n\'95 Defining clear ownership for AI-assisted tasks"\
+      \},\
+      vortex: \{\
+        title: "Operational Chaos",\
+        desc: "Your work is currently in a state of high fragmentation and low predictability:\\n\\n\'95 Communication is scattered across too many channels\\n\'95 AI usage is ad-hoc, creating more noise than value\\n\'95 Tracking progress and accountability is difficult\\n\\n\uc0\u55357 \u56393  High activity, but low meaningful output.",\
+        next: "\'95 Standardizing communication channels for specific workflows\\n\'95 Implementing basic task templates to reduce setup time\\n\'95 Designating clear owners and deadlines for all tasks"\
+      \},\
+      box: \{\
+        title: "Invisible Operations",\
+        desc: "You have clear goals, but the path to achieving them is obscured:\\n\\n\'95 AI and automated processes run in isolation\\n\'95 Lack of visibility into how work is actually progressing\\n\'95 Success is hard to replicate because the process is undocumented\\n\\n\uc0\u55357 \u56393  Great outcomes are happening, but the mechanism is invisible.",\
+        next: "\'95 Visualizing work processes through shared dashboards\\n\'95 Linking individual tasks directly to strategic objectives\\n\'95 Increasing reporting frequency to highlight hidden bottlenecks"\
+      \}\
+    \},\
+    quadrants: \{\
+      growth: ["AI-Driven", "Growth"],\
+      vanity: ["Disconnected", "Momentum"],\
+      vortex: ["Operational", "Chaos"],\
+      box: ["Invisible", "Operations"]\
+    \}\
+  \},\
+  zh: \{\
+    title: "AI \uc0\u24037 \u20316 \u21332 \u35519 \u24230 \u27298 \u28204 ",\
+    subtitle: "Master Concept \'d7 Asana",\
+    heroTitle: "\uc0\u23566 \u20837 \u20102  AI\u65292 \u21371 \u27794 \u26377 \u26356 \u26377 \u25928 \u29575 \u65311 ",\
+    heroSub: "\uc0\u35377 \u22810 \u22296 \u38538 \u24050 \u32147 \u38283 \u22987 \u20351 \u29992  AI\u65292 \u20294 \u26085 \u24120 \u24037 \u20316 \u20173 \u28982 \u65306 ",\
+    painPoints: ["\uc0\u28317 \u36890 \u38646 \u30862 \u21270 ", "\u38627 \u20197 \u36861 \u36452 \u36914 \u24230 ", "\u24456 \u38627 \u35413 \u20272 \u23526 \u38555 \u25104 \u25928 "],\
+    heroFooter: "\uc0\u21839 \u38988 \u19981 \u22312  AI\u65292 \u32780 \u22312 \u26044 \u24037 \u20316 \u22914 \u20309 \u36939 \u20316 \u12290 ",\
+    introTitle: "\uc0\u36889 \u20491 \u24555 \u36895 \u27298 \u28204 \u23559 \u21332 \u21161 \u24744 \u20102 \u35299 \u65306 ",\
+    introPoints: ["AI \uc0\u29986 \u20986 \u22914 \u20309 \u21295 \u20837 \u24037 \u20316 \u27969 ", "\u24037 \u20316 \u22914 \u20309 \u34987 \u31649 \u29702 ", "\u34892 \u21205 \u26159 \u21542 \u30495 \u27491 \u36899 \u32080 \u21040 \u25104 \u26524 "],\
+    introFooter: "\uc0\u25214 \u20986  AI\u12289 \u27969 \u31243 \u33287 \u30446 \u27161 \u20043 \u38291 \u30340 \u33853 \u24046 \u12290 ",\
+    startBtn: "\uc0\u38283 \u22987 \u27298 \u28204 ",\
+    step: "\uc0\u27493 \u39519 ",\
+    next: "\uc0\u19979 \u19968 \u38913 ",\
+    prev: "\uc0\u19978 \u19968 \u38913 ",\
+    getReport: "\uc0\u26597 \u30475 \u22577 \u21578 ",\
+    retry: "\uc0\u37325 \u26032 \u38283 \u22987 ",\
+    downloadPdf: "\uc0\u36664 \u20986  PDF \u22577 \u21578 ",\
+    waiting: "\uc0\u31561 \u24453 \u36664 \u20837 ...",\
+    labelStructured: "\uc0\u26377 \u32080 \u27083 \u30340 ",\
+    labelFragmented: "\uc0\u38646 \u30862 \u30340 ",\
+    labelGoalDriven: "\uc0\u30446 \u27161 \u23566 \u21521 ",\
+    labelLowVisibility: "\uc0\u20302 \u21487 \u35222 \u24230 ",\
+    reportTitle: "\uc0\u35386 \u26039 \u22577 \u21578 \u26360 ",\
+    reportSubtitle: "AI \uc0\u26178 \u20195 \u32068 \u32340 \u23565 \u40778 \u27298 \u26680 ",\
+    suggestion: "\uc0\u24460 \u32396 \u24314 \u35696 ",\
+    footerLabel: "\uc0\u23560 \u23478 \u27934 \u23519 ",\
+    footerNote: "\uc0\u27599 \u20491 \u22296 \u38538 \u30340 \u36939 \u20316 \u26041 \u24335 \u37117 \u19981 \u21516 \u12290 \u36889 \u28961 \u38364 \u32080 \u26524 \u22909 \u22750 \u65292 \u32780 \u26159 \u36879 \u36942 \u27492 \u27169 \u22411 \u30475 \u35211 \u30446 \u21069 \u30340 \u36939 \u20316 \u23526 \u27841 \u12290 ",\
+    cta: "\uc0\u38936 \u21462  6 \u26376 \u24037 \u20316 \u22346 \u20837 \u22580 \u21048  (\u26032 \u21152 \u22369 )",\
+    steps: [\
+      \{ \
+        id: 'aiVelocity',\
+        title: "AI \uc0\u36895 \u24230 ", \
+        q: "\uc0\u24744 \u30340 \u22296 \u38538 \u27491 \u22312 \u20351 \u29992 \u21738 \u20123  AI \u24037 \u20855 \u65311 ", \
+        items: ['ChatGPT', 'Claude', 'M365 Copilot', 'Gemini', 'GitHub Copilot', 'Cursor', 'Notion AI', 'Midjourney', 'Perplexity', 'Gamma', 'Canva Magic', 'Suno', 'Fireflies', 'Otter', 'Jasper', 'OpenClaw']\
+      \},\
+      \{ \
+        id: 'friction',\
+        title: "\uc0\u24037 \u20316 \u27969 ", \
+        q: "\uc0\u22312  AI \u29986 \u29983 \u20839 \u23481 \u24460 \u65292 \u36890 \u24120 \u26371 \u30332 \u29983 \u20160 \u40636 \u20107 \u65311 ", \
+        items: ['\uc0\u22312  LINE / Slack \u35342 \u35542 ', 'Email \u24448 \u36820 \u20659 \u36865 ', '\u35352 \u37636 \u22312  Excel \u25110 \u25991 \u20214 ', '\u38283 \u26371 \u35342 \u35542 \u24460 \u27770 \u23450 ', '\u30001 \u20027 \u31649 \u25351 \u27966 \u20219 \u21209 ', '\u25104 \u21729 \u21508 \u33258 \u34389 \u29702 ', '\u21475 \u38957 \u35201 \u27714 ', '\u25163 \u21205 \u35079 \u35069 \u36028 \u19978 ']\
+      \},\
+      \{ \
+        id: 'workGraph',\
+        title: "\uc0\u24037 \u20316 \u31995 \u32113 ", \
+        q: "\uc0\u38500 \u20102  AI \u20043 \u22806 \u65292 \u24179 \u24120 \u24037 \u20316 \u26159 \u22914 \u20309 \u31649 \u29702 \u30340 \u65311 ", \
+        items: [\
+          \{ label: '\uc0\u22312 \u21934 \u19968 \u31995 \u32113 \u31649 \u29702 ', px: 80 \},\
+          \{ label: '\uc0\u32068 \u21512 \u31649 \u29702  (Portfolio)', px: 80 \},\
+          \{ label: '\uc0\u33258 \u21205 \u21270 \u24037 \u20316 \u27969 ', px: 80 \},\
+          \{ label: '\uc0\u36328 \u22810 \u20491 \u24037 \u20855 \u31649 \u29702 ', px: 60 \},\
+          \{ label: '\uc0\u27402 \u36012 \u19981 \u26126 \u30906 ', px: -80 \},\
+          \{ label: '\uc0\u36914 \u24230 \u19981 \u19968 \u33268 ', px: -80 \},\
+          \{ label: '\uc0\u38656 \u35201 \u19981 \u26039 \u36861 \u36452 ', px: -80 \},\
+          \{ label: '\uc0\u27794 \u26377 \u27161 \u28310 \u27969 \u31243 ', px: -80 \}\
+        ]\
+      \},\
+      \{ \
+        id: 'strategic',\
+        title: "\uc0\u21830 \u26989 \u24433 \u38911 \u21147 ", \
+        q: "\uc0\u20570 \u27770 \u31574 \u26178 \u65292 \u20027 \u35201 \u30340 \u20381 \u25818 \u26159 \u20160 \u40636 \u65311 ", \
+        items: [\
+          \{ label: '\uc0\u26126 \u30906 \u33287 \u25104 \u26524 \u36899 \u32080 ', px: 80 \},\
+          \{ label: '\uc0\u23565 \u40778 \u30446 \u27161 \u33287  OKR', px: 80 \},\
+          \{ label: '\uc0\u26681 \u25818 \u22577 \u34920 \u25110 \u25976 \u25818 ', px: 60 \},\
+          \{ label: '\uc0\u23458 \u25142 \u24433 \u38911 \u21147 \u20998 \u26512 ', px: 60 \},\
+          \{ label: '\uc0\u23436 \u25104 \u24460 \u25165 \u27298 \u35222 ', px: -60 \},\
+          \{ label: '\uc0\u26681 \u25818 \u22296 \u38538 \u35342 \u35542 ', px: -80 \},\
+          \{ label: '\uc0\u26681 \u25818 \u36942 \u21435 \u32147 \u39511 ', px: -80 \},\
+          \{ label: '\uc0\u24456 \u38627 \u21028 \u26039 \u20160 \u40636 \u26377 \u25928 ', px: -80 \}\
+        ]\
+      \}\
+    ],\
+    results: \{\
+      growth: \{\
+        title: "AI \uc0\u39493 \u21205 \u25104 \u38263 \u22411 ",\
+        desc: "\uc0\u24744 \u30340 \u22296 \u38538 \u24050 \u32147 \u24314 \u31435 \u36215 \u30456 \u23565 \u25104 \u29087 \u30340 \u24037 \u20316 \u26041 \u24335 \u65306 \\n\\n\'95 AI \u19981 \u21482 \u26159 \u24037 \u20855 \u65292 \u36996 \u33021 \u23526 \u38555 \u24118 \u21205 \u25104 \u26524 \\n\'95 \u24037 \u20316 \u20117 \u28982 \u26377 \u24207 \u19988 \u25345 \u32396 \u21463 \u21040 \u31649 \u29702 \\n\'95 \u34892 \u21205 \u33287 \u21830 \u26989 \u30446 \u27161 \u26377 \u26126 \u30906 \u36899 \u32080 \\n\\n\u55357 \u56393  AI \u24050 \u25104 \u28858 \u24037 \u20316 \u31995 \u32113 \u30340 \u19968 \u37096 \u20998 \u65292 \u32780 \u19981 \u21482 \u26159 \u20491 \u20154 \u30340 \u25928 \u29575 \u24037 \u20855 \u12290 ",\
+        next: "\'95 \uc0\u23559 \u25104 \u21151 \u30340 \u27969 \u31243 \u27161 \u28310 \u21270 \u20006 \u25033 \u29992 \u26044 \u26356 \u22810 \u23560 \u26696 \\n\'95 \u25552 \u21319 \u36328 \u22296 \u38538 \u30340 \u21487 \u35222 \u24230 \u33287 \u21332 \u21516 \u25928 \u29575 \\n\'95 \u36879 \u36942 \u33258 \u21205 \u21270 \u36914 \u19968 \u27493 \u28187 \u23569 \u37325 \u35079 \u24615 \u30340 \u34892 \u25919 \u24037 \u20316 "\
+      \},\
+      vanity: \{\
+        title: "\uc0\u26039 \u23652 \u21205 \u21147 \u22411 ",\
+        desc: "\uc0\u24744 \u30340 \u22296 \u38538 \u38614 \u26377 \u32080 \u27083 \u65292 \u20294  AI \u30340 \u20729 \u20540 \u22240 \u26039 \u23652 \u32780 \u28961 \u27861 \u23436 \u20840 \u30332 \u25582 \u65306 \\n\\n\'95 AI \u21152 \u36895 \u20102 \u20219 \u21209 \u65292 \u20294 \u29986 \u20986 \u28961 \u27861 \u27969 \u26274 \u36914 \u20837 \u22519 \u34892 \u38542 \u27573 \\n\'95 \u21205 \u33021 \u28040 \u32791 \u22312 \u38971 \u32321 \u30340 \u24037 \u20855 \u20999 \u25563 \u25110 \u20132 \u25509 \u20013 \\n\'95 \u29986 \u20986 \u33287 \u31649 \u29702 \u20043 \u38291 \u30340 \u33853 \u24046 \u38480 \u21046 \u20102 \u25972 \u39636 \u25928 \u29575 \\n\\n\u55357 \u56393  \u20320 \u20497 \u27491 \u22312 \u31227 \u21205 \u65292 \u20294 \u21205 \u33021 \u20006 \u26410 \u23436 \u20840 \u34987 \u31995 \u32113 \u25429 \u25417 \u33287 \u36681 \u21270 \u12290 ",\
+        next: "\'95 \uc0\u23559  AI \u29986 \u20986 \u30452 \u25509 \u36899 \u32080 \u33267 \u23560 \u26696 \u31649 \u29702 \u31995 \u32113 \\n\'95 \u30433 \u37327 \u28187 \u23569 \u36328 \u24179 \u21488 \u30340 \u25163 \u21205 \u36039 \u26009 \u25644 \u31227 \\n\'95 \u28858  AI \u21332 \u21161 \u30340 \u20219 \u21209 \u23450 \u32681 \u26126 \u30906 \u30340 \u36000 \u36012 \u20154 "\
+      \},\
+      vortex: \{\
+        title: "\uc0\u29151 \u36939 \u28151 \u20098 \u22411 ",\
+        desc: "\uc0\u30446 \u21069 \u30340 \u24037 \u20316 \u36939 \u20316 \u34389 \u26044 \u39640 \u24230 \u30862 \u29255 \u21270 \u19988 \u38627 \u20197 \u38928 \u28204 \u30340 \u29376 \u24907 \u65306 \\n\\n\'95 \u28317 \u36890 \u31649 \u36947 \u36942 \u26044 \u20998 \u25955 \\n\'95 AI \u30340 \u20351 \u29992 \u36611 \u28858 \u38568 \u27231 \u65292 \u29986 \u29983 \u30340 \u38620 \u35338 \u22810 \u26044 \u20729 \u20540 \\n\'95 \u38627 \u20197 \u36861 \u36452 \u36914 \u24230 \u33287 \u33853 \u23526 \u27402 \u36012 \\n\\n\u55357 \u56393  \u24537 \u30860 \u31243 \u24230 \u39640 \u65292 \u20294 \u20855 \u20633 \u23526 \u36074 \u24847 \u32681 \u30340 \u29986 \u20986 \u36611 \u20302 \u12290 ",\
+        next: "\'95 \uc0\u28858 \u29305 \u23450 \u24037 \u20316 \u27969 \u31243 \u24314 \u31435 \u27161 \u28310 \u21270 \u30340 \u28317 \u36890 \u31649 \u36947 \\n\'95 \u20351 \u29992 \u22522 \u26412 \u20219 \u21209 \u27169 \u26495 \u20197 \u31680 \u30465 \u35373 \u23450 \u26178 \u38291 \\n\'95 \u28858 \u25152 \u26377 \u20219 \u21209 \u25351 \u27966 \u26126 \u30906 \u30340 \u36000 \u36012 \u20154 \u33287 \u25130 \u27490 \u26085 \u26399 "\
+      \},\
+      box: \{\
+        title: "\uc0\u38577 \u24418 \u25104 \u25928 \u22411 ",\
+        desc: "\uc0\u38614 \u28982 \u26377 \u26126 \u30906 \u30446 \u27161 \u65292 \u20294 \u36948 \u25104 \u30446 \u27161 \u30340 \u36335 \u24465 \u19981 \u22816 \u36879 \u26126 \u65306 \\n\\n\'95 AI \u33287 \u33258 \u21205 \u21270 \u27969 \u31243 \u22312 \u23396 \u23798 \u20013 \u36939 \u34892 \\n\'95 \u32570 \u20047 \u23565 \u24037 \u20316 \u23526 \u38555 \u36914 \u36914 \u30340 \u21487 \u35222 \u24230 \\n\'95 \u25104 \u21151 \u32147 \u39511 \u38627 \u20197 \u35079 \u35069 \u65292 \u22240 \u28858 \u36942 \u31243 \u26410 \u34987 \u35352 \u37636 \\n\\n\u55357 \u56393  \u25104 \u26524 \u38614 \u28982 \u19981 \u37679 \u65292 \u20294 \u36939 \u20316 \u27231 \u21046 \u23565 \u22296 \u38538 \u32780 \u35328 \u26159 \u38577 \u24418 \u30340 \u12290 ",\
+        next: "\'95 \uc0\u36879 \u36942 \u20849 \u20139 \u30475 \u26495 \u35222 \u35258 \u21270 \u24037 \u20316 \u27969 \u31243 \\n\'95 \u23559 \u20491 \u21029 \u20219 \u21209 \u30452 \u25509 \u36899 \u32080 \u33267 \u31574 \u30053 \u30446 \u27161 \\n\'95 \u22686 \u21152 \u22577 \u21578 \u38971 \u29575 \u20197 \u25214 \u20986 \u38577 \u34255 \u30340 \u29942 \u38968 "\
+      \}\
+    \},\
+    quadrants: \{\
+      growth: ["AI-Driven", "\uc0\u25104 \u38263 "],\
+      vanity: ["\uc0\u26039 \u23652 ", "\u21205 \u21147 "],\
+      vortex: ["\uc0\u29151 \u36939 ", "\u28151 \u20098 "],\
+      box: ["\uc0\u38577 \u24418 ", "\u25104 \u25928 "]\
+    \}\
+  \}\
+\};\
+\
+const App = () => \{\
+  const [lang, setLang] = useState('zh');\
+  const t = TRANSLATIONS[lang];\
+  \
+  const [isStarted, setIsStarted] = useState(false);\
+  const [step, setStep] = useState(0);\
+  const [factors, setFactors] = useState(\{\
+    aiVelocity: \{ selections: [] \},\
+    friction: \{ selections: [] \},\
+    workGraph: \{ selections: [] \},\
+    strategic: \{ selections: [] \}\
+  \});\
+  \
+  const [showReport, setShowReport] = useState(false);\
+  const [visualPos, setVisualPos] = useState(\{ x: 0, y: 0 \}); \
+  const [isClient, setIsClient] = useState(false);\
+  \
+  const GRID_SIZE = 40; \
+  const CANVAS_SIZE = 640; \
+\
+  useEffect(() => \{ setIsClient(true); \}, []);\
+\
+  // \uc0\u31934 \u30906 \u36981 \u23432 \u29992 \u25142 \u25552 \u20379 \u30340 \u31227 \u21205 \u35215 \u21063 \
+  const scores = useMemo(() => \{\
+    let finalX = 0;\
+    let finalY = 0;\
+\
+    // [Q1] AI Velocity: \uc0\u27599 \u36984 \u20841 \u20491  > \u24448 \u36000  x \u36600 \u21069 \u36914  40 px\u65288 \u21487 \u30090 \u21152 \u65289 \
+    const q1Count = factors.aiVelocity.selections.length;\
+    finalX -= Math.floor(q1Count / 2) * 40;\
+\
+    // [Q2] Workflow: \uc0\u36984  1 \u20491 \u25110  2 \u20491 \u65292 \u27599 \u20491  -60px\u65307 \u31532  3 \u20491 \u25110 \u20197 \u19978 \u65292 \u27599 \u20491  -40px\
+    const q2Count = factors.friction.selections.length;\
+    if (q2Count > 0) \{\
+      if (q2Count <= 2) \{\
+        finalY -= q2Count * 60;\
+      \} else \{\
+        // \uc0\u21069 \u20841 \u20491  60 + 60 = 120\u65292 \u20043 \u24460 \u27599 \u20491  40\
+        finalY -= (120 + (q2Count - 2) * 40);\
+      \}\
+    \}\
+\
+    // [Q3] Work System: \uc0\u27402 \u37325 \u32047 \u21152 \u21040  X\
+    factors.workGraph.selections.forEach(idx => \{\
+      const item = TRANSLATIONS.en.steps[2].items[idx];\
+      finalX += (item.px || 0);\
+    \});\
+\
+    // [Q4] Strategic: \uc0\u27402 \u37325 \u32047 \u35336 \u21040  Y\
+    factors.strategic.selections.forEach(idx => \{\
+      const item = TRANSLATIONS.en.steps[3].items[idx];\
+      finalY += (item.px || 0);\
+    \});\
+\
+    return \{\
+      x: Math.max(-320, Math.min(320, finalX)),\
+      y: Math.max(-320, Math.min(320, finalY))\
+    \};\
+  \}, [factors]);\
+\
+  // \uc0\u24179 \u28369 \u21205 \u30059 \u37007 \u36655 \
+  useEffect(() => \{\
+    if (!isClient || !isStarted) return;\
+    \
+    let animationFrameId;\
+    const animate = () => \{\
+      setVisualPos(prev => \{\
+        const dx = scores.x - prev.x;\
+        const dy = scores.y - prev.y;\
+        // \uc0\u22686 \u21152 \u23481 \u37679 \u20540 \u65292 \u30906 \u20445 \u26368 \u24460 \u33021 \u31934 \u30906 \u22238 \u27512  0,0\
+        if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return \{ x: scores.x, y: scores.y \};\
+        return \{\
+          x: prev.x + dx * 0.15,\
+          y: prev.y + dy * 0.15\
+        \};\
+      \});\
+      animationFrameId = requestAnimationFrame(animate);\
+    \};\
+    \
+    animate();\
+    return () => cancelAnimationFrame(animationFrameId);\
+  \}, [scores, isClient, isStarted]);\
+\
+  const toggleItemByIndex = (factorId, index) => \{\
+    setFactors(prev => \{\
+      const currentSelections = prev[factorId]?.selections || [];\
+      const exists = currentSelections.includes(index);\
+      const newSelections = exists \
+        ? currentSelections.filter(i => i !== index)\
+        : [...currentSelections, index];\
+      \
+      return \{\
+        ...prev,\
+        [factorId]: \{ selections: newSelections \}\
+      \};\
+    \});\
+  \};\
+\
+  const handleReset = () => \{\
+    setFactors(\{\
+      aiVelocity: \{ selections: [] \},\
+      friction: \{ selections: [] \},\
+      workGraph: \{ selections: [] \},\
+      strategic: \{ selections: [] \}\
+    \});\
+    setStep(0);\
+    setShowReport(false);\
+    setVisualPos(\{ x: 0, y: 0 \});\
+    setIsStarted(false);\
+  \};\
+\
+  const getQuadrantKey = () => \{\
+    if (scores.x >= 0 && scores.y >= 0) return 'growth';\
+    if (scores.x < 0 && scores.y < 0) return 'vortex';\
+    if (scores.x < 0 && scores.y >= 0) return 'vanity';\
+    if (scores.x >= 0 && scores.y < 0) return 'box';\
+    return 'vortex';\
+  \};\
+\
+  const getStatus = () => \{\
+    const totalSelected = Object.values(factors).reduce((acc, f) => acc + (f.selections?.length || 0), 0);\
+    if (totalSelected === 0) return \{ label: t.waiting, color: 'bg-white', glow: 'shadow-white/20', textColor: 'text-slate-400' \};\
+\
+    const key = getQuadrantKey();\
+    if (key === 'growth') return \{ label: t.quadrants.growth.join(' '), color: 'bg-rose-500', glow: 'shadow-rose-500/50', textColor: 'text-rose-500' \};\
+    if (key === 'vortex') return \{ label: t.quadrants.vortex.join(' '), color: 'bg-purple-600', glow: 'shadow-purple-600/50', textColor: 'text-purple-600' \};\
+    if (key === 'vanity') return \{ label: t.quadrants.vanity.join(' '), color: 'bg-amber-500', glow: 'shadow-amber-500/50', textColor: 'text-amber-500' \};\
+    if (key === 'box') return \{ label: t.quadrants.box.join(' '), color: 'bg-blue-600', glow: 'shadow-blue-600/50', textColor: 'text-blue-600' \};\
+    \
+    return \{ label: t.orgStatus, color: 'bg-[#db2777]', glow: 'shadow-rose-500/30', textColor: 'text-rose-500' \};\
+  \};\
+\
+  const status = getStatus();\
+\
+  const stepIcons = [\
+    <Sparkles key="sparkle" size=\{18\} fill="#fbbf24" stroke="#fbbf24" />,\
+    <Unplug key="unplug" size=\{18\} className="text-rose-500" />,\
+    <LayoutDashboard key="dashboard" size=\{18\} className="text-[#db2777]" />,\
+    <Target key="target" size=\{18\} className="text-emerald-600" />\
+  ];\
+\
+  if (!isClient) return null;\
+\
+  if (!isStarted) \{\
+    return (\
+      <div className="min-h-screen bg-[#4c0519] flex flex-col items-center justify-center p-6 text-white overflow-hidden relative font-sans no-print">\
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-rose-700/10 blur-[120px] rounded-full"></div>\
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-700/10 blur-[120px] rounded-full"></div>\
+\
+        <div className="max-w-4xl w-full z-10 animate-in fade-in duration-700">\
+          <header className="flex justify-between items-center mb-16">\
+             <div className="flex items-center gap-4">\
+                <div className="bg-white p-2.5 rounded-2xl shadow-xl">\
+                   <Activity className="text-[#db2777]" size=\{28\} />\
+                </div>\
+                <div>\
+                   <h1 className="text-xl font-bold tracking-tight uppercase leading-none">\{t.title\}</h1>\
+                   <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] mt-1">\{t.subtitle\}</p>\
+                </div>\
+             </div>\
+             <button \
+                onClick=\{() => setLang(l => l === 'zh' ? 'en' : 'zh')\}\
+                className="px-5 py-2.5 bg-white/5 hover:bg-white/15 rounded-full border border-white/10 text-[11px] font-bold tracking-widest uppercase transition-all flex items-center gap-2"\
+             >\
+                <Languages size=\{14\} />\
+                \{lang === 'zh' ? 'English' : '\uc0\u32321 \u39636 \u20013 \u25991 '\}\
+             </button>\
+          </header>\
+\
+          <div className="grid lg:grid-cols-2 gap-12 items-center">\
+            <div className="space-y-10">\
+               <div className="space-y-6">\
+                  <h2 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-white">\
+                     \{t.heroTitle\}\
+                  </h2>\
+                  <div className="space-y-4">\
+                    <p className="text-rose-200/90 text-lg font-medium">\{t.heroSub\}</p>\
+                    <div className="grid gap-3">\
+                      \{t.painPoints.map((p, i) => (\
+                        <div key=\{i\} className="flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-2xl">\
+                          <div className="w-2 h-2 bg-rose-500 rounded-full shadow-lg shadow-rose-500/50"></div> \
+                          <span className="text-white/90 font-semibold">\{p\}</span>\
+                        </div>\
+                      ))\}\
+                    </div>\
+                    <div className="pt-6">\
+                      <p className="text-xl font-bold text-rose-400 border-l-4 border-rose-500 pl-4">\{t.heroFooter\}</p>\
+                    </div>\
+                  </div>\
+               </div>\
+            </div>\
+\
+            <div className="space-y-8">\
+              <div className="p-10 bg-white/5 backdrop-blur-xl rounded-[40px] border border-white/10 shadow-2xl space-y-8">\
+                <div className="flex items-center gap-3">\
+                  <Info size=\{20\} className="text-rose-400" />\
+                  <h3 className="text-xl font-bold text-white">\{t.introTitle\}</h3>\
+                </div>\
+                <div className="space-y-5">\
+                  \{t.introPoints.map((p, i) => (\
+                    <div key=\{i\} className="flex gap-4">\
+                      <div className="flex-shrink-0 w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-rose-300">\
+                         <span className="text-xs font-black">\{i + 1\}</span>\
+                      </div>\
+                      <p className="text-base font-semibold text-white/80 pt-1 leading-snug">\{p\}</p>\
+                    </div>\
+                  ))\}\
+                </div>\
+                <div className="pt-6 border-t border-white/10">\
+                  <p className="text-xs font-bold text-white/30 uppercase tracking-[0.2em]">\
+                    \{t.introFooter\}\
+                  </p>\
+                </div>\
+              </div>\
+\
+              <div className="flex flex-col sm:flex-row items-center gap-8 px-2">\
+                <div className="flex-1 text-center sm:text-left">\
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 mb-3">Powered by</p>\
+                  <div className="flex justify-center sm:justify-start text-white/90 font-bold text-xl">\
+                    Master Concept\
+                  </div>\
+                </div>\
+                <button \
+                  onClick=\{() => setIsStarted(true)\}\
+                  className="w-full sm:w-auto px-10 py-5 bg-white text-[#4c0519] font-extrabold text-lg rounded-3xl shadow-2xl hover:bg-rose-50 active:scale-95 transition-all flex items-center justify-center gap-3"\
+                >\
+                  \{t.startBtn\}\
+                  <ArrowRight size=\{20\} />\
+                </button>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+      </div>\
+    );\
+  \}\
+\
+  const currentStepData = t.steps[step];\
+  const factorId = currentStepData.id;\
+\
+  return (\
+    <div className=\{`min-h-screen bg-[#4c0519] text-slate-800 font-sans p-4 lg:p-6 overflow-hidden flex flex-col $\{showReport ? 'print-mode' : ''\}`\}>\
+      \{/* Header */\}\
+      <div className="max-w-full flex justify-between items-center mb-6 px-4 no-print">\
+        <div className="flex items-center gap-3">\
+          <div className="bg-white p-2 rounded-2xl shadow-xl">\
+             <Activity className="text-[#db2777]" size=\{28\} />\
+          </div>\
+          <div>\
+            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight uppercase leading-none">\{t.title\}</h1>\
+            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">\{t.subtitle\}</p>\
+          </div>\
+        </div>\
+        <div className="flex items-center gap-6">\
+          <button \
+            onClick=\{() => setLang(l => l === 'zh' ? 'en' : 'zh')\}\
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-all text-white border border-white/20 group active:scale-95"\
+          >\
+            <Languages size=\{14\} />\
+            <span className="text-[11px] font-bold uppercase tracking-widest">\
+              \{lang === 'zh' ? 'English' : '\uc0\u32321 \u39636 \u20013 \u25991 '\}\
+            </span>\
+          </button>\
+        </div>\
+      </div>\
+\
+      <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden no-print">\
+        \{/* Sidebar */\}\
+        <aside className="w-full lg:w-[35%] bg-white rounded-[40px] shadow-2xl flex flex-col overflow-hidden border border-white/10">\
+          <div className="p-8 pb-4 flex items-center justify-between">\
+            <div className="flex items-center gap-3">\
+              <div className="p-3 bg-rose-50 rounded-2xl text-[#9d174d]">\
+                \{stepIcons[step]\}\
+              </div>\
+              <h2 className="text-xl font-bold text-[#4c0519]">\{currentStepData.title\}</h2>\
+            </div>\
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">\{t.step\} \{step + 1\}/4</span>\
+          </div>\
+          <div className="flex-1 overflow-y-auto px-8 py-4 custom-scrollbar">\
+            <div key=\{step + lang\} className="space-y-6 animate-in fade-in duration-300">\
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-wide leading-relaxed">\
+                \{currentStepData.q\}\
+              </p>\
+              <div className=\{step === 0 ? "grid grid-cols-2 gap-2" : "space-y-2"\}>\
+                \{currentStepData.items.map((item, idx) => (\
+                  <button\
+                    key=\{idx\}\
+                    onClick=\{() => toggleItemByIndex(factorId, idx)\}\
+                    className=\{`text-[11px] px-4 py-3.5 rounded-2xl font-bold transition-all border-2 text-left leading-tight $\{\
+                      factors[factorId]?.selections.includes(idx) \
+                      ? 'bg-[#9d174d] border-[#9d174d] text-white shadow-lg' \
+                      : 'bg-slate-50 border-transparent text-slate-400 hover:border-rose-100 hover:bg-white'\
+                    \}`\}\
+                  >\
+                    \{typeof item === 'string' ? item : item.label\}\
+                  </button>\
+                ))\}\
+              </div>\
+            </div>\
+          </div>\
+          <div className="p-8 border-t border-slate-50 bg-slate-50/50 flex gap-4">\
+            \{step > 0 && (\
+              <button onClick=\{() => setStep(s => s - 1)\} className="p-5 bg-white border-2 border-slate-100 text-slate-400 font-bold rounded-3xl hover:bg-slate-50 transition-all shadow-sm active:scale-95">\
+                <ChevronLeft size=\{20\} />\
+              </button>\
+            )\}\
+            <button \
+              onClick=\{() => step < 3 ? setStep(s => s + 1) : setShowReport(true)\}\
+              className="flex-1 py-5 bg-[#db2777] text-white font-bold rounded-3xl flex items-center justify-center gap-2 shadow-xl shadow-rose-900/20 active:scale-95 transition-all text-sm tracking-wide"\
+            >\
+              \{step < 3 ? t.next : t.getReport\} <ChevronRight size=\{20\} />\
+            </button>\
+          </div>\
+        </aside>\
+\
+        \{/* Canvas Area */\}\
+        <main className="flex-1 lg:w-[65%] relative flex items-center justify-center min-h-[500px]">\
+          <div \
+            className="relative bg-white/5 backdrop-blur-sm rounded-[60px] border border-white/10 shadow-inner overflow-hidden"\
+            style=\{\{ width: CANVAS_SIZE, height: CANVAS_SIZE \}\}\
+          >\
+            \{/* Grid */\}\
+            <div className="absolute inset-0 opacity-20" \
+                 style=\{\{\
+                   backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`, \
+                   backgroundSize: `$\{GRID_SIZE\}px $\{GRID_SIZE\}px`,\
+                   backgroundPosition: '0 0'\
+                 \}\}></div>\
+            \
+            \{/* Axis Lines */\}\
+            <div className="absolute top-0 left-1/2 w-[2px] h-full bg-white/40 z-10 -translate-x-1/2"></div>\
+            <div className="absolute left-0 top-1/2 w-full h-[2px] bg-white/40 z-10 -translate-y-1/2"></div>\
+            \
+            \{/* Quadrant Labels */\}\
+            <div className="absolute top-12 right-12 text-right pointer-events-none">\
+              <h3 className="text-white/10 text-4xl font-black tracking-tighter uppercase leading-[0.85] select-none">\{t.quadrants.growth[0]\}<br/>\{t.quadrants.growth[1]\}</h3>\
+            </div>\
+            <div className="absolute top-12 left-12 text-left pointer-events-none">\
+              <h3 className="text-white/10 text-4xl font-black tracking-tighter uppercase leading-[0.85] select-none">\{t.quadrants.vanity[0]\}<br/>\{t.quadrants.vanity[1]\}</h3>\
+            </div>\
+            <div className="absolute bottom-12 left-12 text-left pointer-events-none">\
+              <h3 className="text-white/10 text-4xl font-black tracking-tighter uppercase leading-[0.85] select-none">\{t.quadrants.vortex[0]\}<br/>\{t.quadrants.vortex[1]\}</h3>\
+            </div>\
+            <div className="absolute bottom-12 right-12 text-right pointer-events-none">\
+              <h3 className="text-white/10 text-4xl font-black tracking-tighter uppercase leading-[0.85] select-none">\{t.quadrants.box[0]\}<br/>\{t.quadrants.box[1]\}</h3>\
+            </div>\
+\
+            \{/* BALL (CENTER ALIGNED) */\}\
+            <div \
+              className="absolute z-30"\
+              style=\{\{ \
+                left: `50%`, \
+                top: `50%`,\
+                // \uc0\u30906 \u20445 \u29699 \u39636 \u33258 \u36523 \u30340 \u20013 \u24515 \u40670 \u23565 \u40778 \u26684 \u32218 \u20013 \u24515 \
+                transform: `translate(calc(-50% + $\{visualPos.x\}px), calc(-50% - $\{visualPos.y\}px))`\
+              \}\}\
+            >\
+              <div className=\{`w-20 h-20 rounded-full flex items-center justify-center text-white transition-all duration-500 shadow-2xl $\{status.color\} $\{status.glow\} border-4 border-white relative`\}>\
+                <Orbit size=\{44\} className=\{Object.values(factors).some(f => f.selections.length > 0) ? "animate-spin" : ""\} style=\{\{ animationDuration: '3s' \}\} />\
+                <div className=\{`absolute inset-[-20px] rounded-full border-2 border-white/20 animate-ping opacity-20`\}></div>\
+              </div>\
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 whitespace-nowrap">\
+                <div className="px-6 py-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 flex flex-col items-center">\
+                   <div className=\{`text-sm font-bold uppercase tracking-tight $\{status.textColor\}`\}>\{status.label\}</div>\
+                </div>\
+              </div>\
+            </div>\
+\
+            \{/* Edge Labels */\}\
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/40 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none">\{t.labelGoalDriven\}</div>\
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/40 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none">\{t.labelLowVisibility\}</div>\
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/40 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none" style=\{\{ writingMode: 'vertical-lr', transform: 'translateY(-50%) rotate(180deg)' \}\}>\{t.labelFragmented\}</div>\
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-white/40 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none" style=\{\{ writingMode: 'vertical-lr', transform: 'translateY(-50%)' \}\}>\{t.labelStructured\}</div>\
+          </div>\
+        </main>\
+      </div>\
+\
+      \{/* Report Modal */\}\
+      \{showReport && (\
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#4c0519]/90 backdrop-blur-2xl report-overlay">\
+          <div className="bg-white rounded-[50px] w-full max-w-5xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] report-container">\
+            <div className="bg-gradient-to-r from-[#f43f5e] to-[#db2777] p-8 md:p-12 text-white flex justify-between items-center flex-shrink-0">\
+              <div className="flex items-center gap-6">\
+                 <div className="bg-white/20 p-4 rounded-3xl backdrop-blur-md no-print">\
+                   <Activity size=\{40\} />\
+                 </div>\
+                 <div>\
+                    <h2 className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight leading-none">\{t.reportTitle\}</h2>\
+                    <p className="text-white/70 font-bold text-sm uppercase tracking-widest mt-3">\{t.reportSubtitle\}</p>\
+                 </div>\
+              </div>\
+              <div className="flex gap-3 no-print">\
+                <button onClick=\{() => window.print()\} className="bg-white/15 p-4 rounded-full hover:bg-white/25 transition-all active:scale-90 flex items-center gap-2 font-bold text-xs uppercase tracking-widest">\
+                  <Printer size=\{20\} /> \{t.downloadPdf\}\
+                </button>\
+                <button onClick=\{() => setShowReport(false)\} className="bg-white/15 p-4 rounded-full hover:bg-white/25 transition-all active:scale-90">\
+                  <ChevronLeft size=\{24\} />\
+                </button>\
+              </div>\
+            </div>\
+            \
+            <div className="p-8 md:p-12 space-y-12 overflow-y-auto custom-scrollbar flex-1 bg-[#fafafa]">\
+              <div className="grid lg:grid-cols-5 gap-12">\
+                <div className="lg:col-span-3 space-y-8">\
+                  <div className="flex items-center gap-4">\
+                    <div className=\{`w-4 h-10 rounded-full $\{status.color\}`\}></div>\
+                    <h3 className="text-3xl font-black text-slate-800 uppercase tracking-tight">\
+                      \{t.results[getQuadrantKey()].title\}\
+                    </h3>\
+                  </div>\
+                  \
+                  <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm leading-relaxed">\
+                    <p className="text-slate-600 font-medium whitespace-pre-line text-lg">\
+                      \{t.results[getQuadrantKey()].desc\}\
+                    </p>\
+                  </div>\
+\
+                  <div className="p-8 bg-rose-50/50 rounded-[40px] border border-rose-100/50 relative overflow-hidden">\
+                    <div className="flex items-center gap-3 mb-6">\
+                      <Zap size=\{24\} className="text-[#db2777]" />\
+                      <h4 className="font-black text-[#db2777] uppercase text-sm tracking-[0.2em]">\{t.suggestion\}</h4>\
+                    </div>\
+                    <p className="text-slate-700 font-bold leading-relaxed whitespace-pre-line text-base">\
+                      \{t.results[getQuadrantKey()].next\}\
+                    </p>\
+                  </div>\
+                </div>\
+\
+                <div className="lg:col-span-2 space-y-8">\
+                   <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col items-center">\
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Current Position</span>\
+                      <div className="relative w-full aspect-square bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden flex items-center justify-center">\
+                         <div className="absolute inset-0 opacity-10" style=\{\{ backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, backgroundSize: '6.25% 6.25%' \}\}></div>\
+                         <div className="absolute w-full h-[1px] bg-slate-200"></div>\
+                         <div className="absolute h-full w-[1px] bg-slate-200"></div>\
+                         <div className=\{`w-8 h-8 rounded-full $\{status.color\} shadow-lg border-2 border-white relative z-10 transition-all duration-500`\}\
+                              style=\{\{ transform: `translate($\{scores.x / 4\}px, $\{-scores.y / 4\}px)` \}\}>\
+                         </div>\
+                      </div>\
+                      <div className="mt-6 flex justify-between w-full text-[10px] font-bold text-slate-400 uppercase tracking-tighter">\
+                         <span>X: \{scores.x\}px</span>\
+                         <span>Y: \{scores.y\}px</span>\
+                      </div>\
+                   </div>\
+\
+                   <div className="bg-slate-800 p-8 rounded-[40px] text-white space-y-4">\
+                      <div className="flex items-center gap-3 mb-2">\
+                        <Lightbulb size=\{20\} className="text-amber-400" />\
+                        <span className="text-xs font-black uppercase tracking-widest text-white/50">\{t.footerLabel\}</span>\
+                      </div>\
+                      <p className="text-white/80 text-sm font-medium leading-relaxed italic">\
+                        "\{t.footerNote\}"\
+                      </p>\
+                   </div>\
+                </div>\
+              </div>\
+              \
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 no-print">\
+                <button onClick=\{handleReset\} className="px-10 py-6 bg-slate-200 text-slate-600 font-bold rounded-[30px] flex items-center justify-center gap-2 hover:bg-slate-300 transition-all active:scale-95">\
+                  <RotateCcw size=\{20\} /> \{t.retry\}\
+                </button>\
+                <button className="flex-1 py-6 bg-[#db2777] text-white font-bold rounded-[30px] shadow-xl hover:bg-black transition-all uppercase tracking-widest active:scale-[0.98] text-sm">\
+                  \{t.cta\}\
+                </button>\
+              </div>\
+\
+              <div className="text-center pt-8 border-t border-slate-200">\
+                  <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em]">Master Concept \'a9 2026</p>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+      )\}\
+\
+      <style>\{`\
+        .custom-scrollbar::-webkit-scrollbar \{ width: 4px; \}\
+        .custom-scrollbar::-webkit-scrollbar-thumb \{ background: rgba(219, 39, 119, 0.2); border-radius: 10px; \}\
+        @media print \{\
+          .no-print \{ display: none !important; \}\
+          .print-mode \{ background: white !important; padding: 0 !important; \}\
+          .report-overlay \{ position: static !important; background: white !important; padding: 0 !important; \}\
+          .report-container \{ max-width: 100% !important; height: auto !important; max-height: none !important; box-shadow: none !important; border-radius: 0 !important; \}\
+          body \{ -webkit-print-color-adjust: exact; \}\
+        \}\
+      `\}</style>\
+    </div>\
+  );\
+\};\
+\
+export default App;\
+\
+}
